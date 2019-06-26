@@ -13,22 +13,22 @@ class ParserTest extends TestCase
     public function twitterTest()
     {
         $svido = new SVideo();
-        $parser = $svido->parser('https://twitter.com/i/status/1142189380661989376/set/sett');
-        $parser->setHttpProxy('http://127.0.0.1:1087');
+        $parser = $svido->parser('https://twitter.com/i/status/1142189380661989376');
+//        $parser->setHttpProxy('http://127.0.0.1:1087');
         $parser->fetch();
 
         $this->assertEmpty($parser->playlist());
     }
 
     /**
-     * @test
+     * @tes
      * @throws \Mickeyto\SVideo\Exception\ParserException
      */
     public function pornTest()
     {
         $svido = new SVideo();
         $parser = $svido->parser('http://91porn.com/view_video.php?viewkey=edc5bf40273f98d59bb6&page=9&viewtype=basic&category=mr');
-        $parser->setHttpProxy('http://127.0.0.1:1087');
+//        $parser->setHttpProxy('http://127.0.0.1:1087');
         $parser->fetch();
 
         $this->assertEmpty($parser->playlist());
@@ -36,7 +36,7 @@ class ParserTest extends TestCase
     }
 
     /**
-     * @test
+     * @tes
      * @throws \Mickeyto\SVideo\Exception\ParserException
      */
     public function iqiyiTest()
@@ -56,13 +56,15 @@ class ParserTest extends TestCase
     {
         $svido = new SVideo();
         $parser = $svido->parser('https://m.toutiaoimg.com/group/6704875330928116228/?app=news_article&timestamp=1561439252&group_id=6704875330928116228');
+
+//        $parser->setHttpProxy('http://127.0.0.1:1087');
         $parser->fetch();
 
         $this->assertEmpty($parser->playlist());
     }
 
     /**
-     * @test
+     * @tes
      * @throws \Mickeyto\SVideo\Exception\ParserException
      */
     public function youkuTest()
