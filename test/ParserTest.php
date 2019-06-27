@@ -11,6 +11,24 @@ class ParserTest extends TestCase
      * @test
      * @throws \Mickeyto\SVideo\Exception\ParserException
      */
+    public function weiboTest()
+    {
+        $svido = new SVideo();
+//        $parser = $svido->parser('https://weibo.com/tv/v/HARDiD19b?fid=1034:4387859407250945');
+        $parser = $svido->parser('https://weibo.com/tv/v/HARhfoVe1?fid=1034:4387845943795564');
+//        $parser->setHttpProxy('http://127.0.0.1:1087');
+
+        $parser->setHeader('Cookie', 'SUBP=0033WrSXqPxfM725Ws9jqgMF55529P9D9WW3PsCb55p3CXxHR9oDv0OW5JpX5KzhUgL.FozN1KefehzXS052dJLoIEXLxKBLB.BLBK5LxKnL1hBLBo2LxKnLBoBLB-zLxKBLB.2L1hqLxK-L1K5L1KMt;  SUB=_2A25xqLwdDeRhGeRJ4lEU8CzIzDyIHXVS36rVrDV8PUNbn9BeLWTXkW9NUklEG2ghQmTSYlBq7Ojj_RI2o5TCBO6W;');
+        $parser->fetch();
+        var_export($parser->playlist());
+
+        $this->assertEmpty($parser->playlist());
+    }
+
+    /**
+     * @test
+     * @throws \Mickeyto\SVideo\Exception\ParserException
+     */
     public function pornhubTest()
     {
         $svido = new SVideo();
