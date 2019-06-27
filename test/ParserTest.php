@@ -76,4 +76,17 @@ class ParserTest extends TestCase
         $this->assertEmpty($parser->playlist());
     }
 
+    /**
+     * @test
+     * @throws \Mickeyto\SVideo\Exception\ParserException
+     */
+    public function bilibiliTest()
+    {
+        $svido = new SVideo();
+        $parser = $svido->parser('https://www.bilibili.com/video/av56862102');
+        $parser->fetch();
+
+        $this->assertEmpty($parser->playlist());
+    }
+
 }
