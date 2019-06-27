@@ -1,6 +1,5 @@
 {
     "name": "mickeyto/svideo",
-    "version": "0.1",
     "type": "library",
     "license": "MIT",
     "description": "videos parser",

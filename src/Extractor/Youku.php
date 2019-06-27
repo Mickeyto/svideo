@@ -109,14 +109,4 @@ class Youku extends ExtractorAdapter
         return $this;
 
     }
-
-    public function playlist(): array
-    {
-        return $this->_playlist;
-    }
-
-    public function title(): string
-    {
-        return $this->title;
-    }
 }
