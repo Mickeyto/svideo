@@ -160,14 +160,23 @@ class Bilibili extends ExtractorAdapter
         $playlist = [];
         $pagesUrlCount = count($pagesUrl);
         if($pagesUrlCount > 0){
+
             foreach($pagesUrl as $row){
                 $title = $row['cid'] . '-' . $row['title'];
                 $this->setTitle($title);
 
                 if(isset($row['url']['video_audio'])){
-                    $playlist = $row['url']['video_audio'];
+                    foreach($row['url']['video_audio'] as $value){
+                        $playlist[] = [
+                            'size' => $row['videoQuality'],
+                            'url' => $value
+                        ];
+                    }
                 } else {
-                    $playlist = $row['url'];
+                    $playlist[] = [
+                        'size' => $row['videoQuality'],
+                        'url' => $row['url']
+                    ];
                 }
             }
 
