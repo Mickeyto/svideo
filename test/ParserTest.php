@@ -9,6 +9,20 @@ class ParserTest extends TestCase
 {
     /**
      * @test
+     * @throws \Mickeyto\SVideo\Exception\ParserException
+     */
+    public function pornhubTest()
+    {
+        $svido = new SVideo();
+        $parser = $svido->parser('https://www.pornhub.com/view_video.php?viewkey=ph5c0aa01a52aaa');
+        $parser->setHttpProxy('http://127.0.0.1:1087');
+        $parser->fetch();
+
+        $this->assertEmpty($parser->playlist());
+    }
+
+    /**
+     * @test
      */
     public function twitterTest()
     {
