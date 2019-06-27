@@ -21,7 +21,7 @@ class ParserTest extends TestCase
     }
 
     /**
-     * @tes
+     * @test
      * @throws \Mickeyto\SVideo\Exception\ParserException
      */
     public function pornTest()
@@ -36,7 +36,7 @@ class ParserTest extends TestCase
     }
 
     /**
-     * @tes
+     * @test
      * @throws \Mickeyto\SVideo\Exception\ParserException
      */
     public function iqiyiTest()
@@ -64,7 +64,7 @@ class ParserTest extends TestCase
     }
 
     /**
-     * @tes
+     * @test
      * @throws \Mickeyto\SVideo\Exception\ParserException
      */
     public function youkuTest()
