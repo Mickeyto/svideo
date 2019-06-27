@@ -4,6 +4,7 @@
 namespace Mickeyto\SVideo\Extractor;
 
 
+use Mickeyto\Curl\Request;
 use Mickeyto\SVideo\Exception\ParserException;
 use Mickeyto\SVideo\ExtractorAdapter;
 use Mickeyto\SVideo\Helper\ArrayHelper;
@@ -51,7 +52,8 @@ class Twitter extends ExtractorAdapter
         $curlHeader = $this->httpHeader($authorization);
 
         $this->setHeader('headers', $curlHeader);
-        $getInfo = $this->httpRequest($api, 'get', ['Referer' => $this->requestUrl])->getContents();
+//        $getInfo = $this->httpRequest($api, 'get', ['Referer' => $this->requestUrl])->getContents();
+        $getInfo = $this->customGet($api, $authorization);
 
         if(empty($getInfo)){
             throw new ParserException('Error：get videos info ');
@@ -139,6 +141,34 @@ class Twitter extends ExtractorAdapter
         }
 
         return $this;
+    }
+
+    public function customHeader(string $authorization=''):array
+    {
+        $ip = $this->randIp();
+        $curlHeader = [
+            CURLOPT_HTTPHEADER => [
+                "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                "Accept-Language: zh-CN,en-US;q=0.7,en;q=0.3",
+                "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36",
+                "HTTP_X_FORWARDED_FOR: {$ip}",
+                "CLIENT-IP: {$ip}",
+                "Authorization: {$authorization}",
+            ],
+            CURLOPT_PROXY => $this->http_proxy,
+        ];
+
+        return $curlHeader;
+    }
+
+    public function customGet(string $uri, string $authorization=null)
+    {
+        $client = new Request();
+        $client->setUrl($uri);
+        $client->setOptions($this->customHeader($authorization));
+        $response = $client->exec()->content;
+
+        return $response;
     }
 
 }

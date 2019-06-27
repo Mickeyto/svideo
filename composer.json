@@ -14,7 +14,8 @@
         "ext-curl": "*",
         "ext-json": "*",
         "guzzlehttp/guzzle": "^6.3",
-        "phpunit/phpunit": "^8.2"
+        "phpunit/phpunit": "^8.2",
+        "mickeyto/curl": "dev-master"
     },
     "autoload": {
         "psr-4": {
