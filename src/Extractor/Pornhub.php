@@ -87,13 +87,11 @@ class Pornhub extends ExtractorAdapter
                 continue;
             }
 
-            if($row['format'] == 'mp4'){
-                $playlist[] = [
-                    'size' => $row['quality'],
-                    'format' => $row['format'],
-                    'url' => $row['videoUrl'],
-                ];
-            }
+            $playlist[] = [
+                'size' => $row['quality'],
+                'format' => $row['format'],
+                'url' => $row['videoUrl'],
+            ];
         }
 
         $this->setPlaylist($playlist);
