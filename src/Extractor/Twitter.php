@@ -68,7 +68,12 @@ class Twitter extends ExtractorAdapter
         $userName = str_replace([' ', '\\', '/', '\''], '', $json['user']['name']);
 
         $title = $userName . '-' . $vid;
-        $videoInfo = $json['extended_entities']['media'][0]['video_info']['variants'];
+
+        if(isset($json['quoted_status'])){
+            $videoInfo = $json['quoted_status']['extended_entities']['media'][0]['video_info']['variants'];
+        } else {
+            $videoInfo = $json['extended_entities']['media'][0]['video_info']['variants'];
+        }
 
         return [
             'title' => $title,
