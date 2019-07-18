@@ -11,6 +11,7 @@ use Mickeyto\SVideo\Helper\ArrayHelper;
 class Weibo extends ExtractorAdapter
 {
     public $_domain = 'Weibo';
+    private const WEIBO_VIDEO_OBJECT_API = 'https://m.weibo.cn/s/video/object?';
 
     public function __construct(string $url)
     {
@@ -107,6 +108,11 @@ class Weibo extends ExtractorAdapter
             }
 
             if(empty($json['data']['page_info']['media_info'])){
+                $videosInfo = $this->getVideoObject();
+                if($videosInfo){
+                    return $videosInfo;
+                }
+
                 throw new ParserException('Error：media_info is empty');
             }
 
@@ -128,6 +134,56 @@ class Weibo extends ExtractorAdapter
                 'stream' => $streamInfo,
             ];
         }
+
+        return $videosInfo;
+    }
+
+    /**
+     * @return array
+     * @throws ParserException
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function getVideoObject():array
+    {
+        $parseurlInfo = parse_url($this->requestUrl, PHP_URL_QUERY);
+        parse_str($parseurlInfo, $params);
+        if(!isset($params['object_id'])){
+            throw new ParserException('not object_id');
+        }
+
+        if(!isset($params['blog_mid'])){
+            throw new ParserException('not blog_mid');
+        }
+
+        $apiUrl = self::WEIBO_VIDEO_OBJECT_API;
+        $apiUrl .= 'object_id=' . $params['object_id']  . '&mid=' . $params['blog_mid'];
+        $videoObject = $this->httpRequest($apiUrl, 'get', ['Referer' => $this->requestUrl])->getContents();
+
+        if(empty($videoObject)){
+            throw new ParserException('Error: get video object');
+        }
+
+        $json = json_decode($videoObject, true);
+        $videoData = $json['data'];
+        if(!is_array($videoData['object']['author'])){
+            throw new ParserException('not found author');
+        }
+
+        $title = $videoData['object']['author']['screen_name'] . '-' . $params['object_id'];
+        $mediaInfo = [];
+        if(isset($videoData['object']['stream']['hd_url'])){
+            array_push($mediaInfo, $videoData['object']['stream']['hd_url']);
+        } else {
+            array_push($mediaInfo, $videoData['object']['stream']['url']);
+        }
+
+        $videosInfo = [
+            'type' => 'api',
+            'title' => $title,
+            'url' => $mediaInfo,
+            'size' => 1024,
+            'stream' => [$videoData['object']['stream']['width']],
+        ];
 
         return $videosInfo;
     }
