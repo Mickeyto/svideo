@@ -88,7 +88,7 @@ class Porn extends ExtractorAdapter
             throw new ParserException('Error：not found title');
         }
 
-        preg_match_all('/<source\ssrc="(.*)"\stype="video\/mp4">/', $html, $matchesVideo);
+        preg_match_all('/<source\ssrc="(.*)"\stype=["|\']video\/mp4["|\']>/', $html, $matchesVideo);
         if(!isset($matchesVideo[1][0])){
             preg_match_all('/strencode\((.*)\)\);/', $html, $matchesVideo);
             if(!isset($matchesVideo[1][0])){
