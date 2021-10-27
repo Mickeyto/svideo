@@ -4,6 +4,7 @@ namespace Mickeyto\SVideo\ExtractorV2;
 
 use Mickeyto\SVideo\Exception\ParserException;
 use Mickeyto\SVideo\ExtractorAdapter;
+use Mickeyto\SVideo\Uitls\Curl;
 
 class Kuaishou extends ExtractorAdapter
 {
@@ -30,112 +31,12 @@ class Kuaishou extends ExtractorAdapter
     }
 
     /**
-     * 暂不可使用
+     * 使用 Graphql 接口
      * @return string
-     * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function buildGraphqlQuery():string
+    public function buildGraphqlQuery():String
     {
-        $_requestParams = [
-            'operationName' => 'visionVideoDetail',
-            'query' => 'query visionVideoDetail($photoId: String, $type: String, $page: String, $webPageArea: String) {
-  visionVideoDetail(photoId: $photoId, type: $type, page: $page, webPageArea: $webPageArea) {
-    status
-    type
-    author {
-      id
-      name
-      following
-      headerUrl
-      __typename
-    }
-    photo {
-      id
-      duration
-      caption
-      likeCount
-      realLikeCount
-      coverUrl
-      photoUrl
-      liked
-      timestamp
-      expTag
-      llsid
-      viewCount
-      videoRatio
-      stereoType
-      croppedPhotoUrl
-      manifest {
-        mediaType
-        businessType
-        version
-        adaptationSet {
-          id
-          duration
-          representation {
-            id
-            defaultSelect
-            backupUrl
-            codecs
-            url
-            height
-            width
-            avgBitrate
-            maxBitrate
-            m3u8Slice
-            qualityType
-            qualityLabel
-            frameRate
-            featureP2sp
-            hidden
-            disableAdaptive
-            __typename
-          }
-          __typename
-        }
-        __typename
-      }
-      __typename
-    }
-    tags {
-      type
-      name
-      __typename
-    }
-    commentLimit {
-      canAddComment
-      __typename
-    }
-    llsid
-    danmakuSwitch
-    __typename
-  }
-}
-',
-            'variables' => [
-                'pcursor' => 'detail',
-                'photoId' => $this->getPhotoId(),
-            ],
-        ];
-
-
-//        echo json_encode($_requestParams);die;
-
-//        echo $this->_baseApi . PHP_EOL;die;
-
-
-
-        $s = $this->requestAsync($this->_baseApi, 'post', [
-            'form_params' => $_requestParams,
-        ])->withAddedHeader('Referer', $this->requestUrl)
-            ->withAddedHeader('Host', 'video.kuaishou.com')
-            ->withAddedHeader('Origin', 'https://video.kuaishou.com')
-        ->withAddedHeader('User-Agent', 'Paw/3.2.1 (Macintosh; OS X/12.0.1) GCDHTTPRequest')
-        ->withAddedHeader('Date', 'Tue, 26 Oct 2021 16:14:46 GMT')
-        ->withAddedHeader('Content-Type', 'application/json');
-        var_export($s->getBody()->getContents());
-
-        return 'test';
+        return '{"operationName":"visionVideoDetail","variables":{"photoId":"'. $this->getPhotoId() .'","page":"detail"},"query":"query visionVideoDetail($photoId: String, $type: String, $page: String, $webPageArea: String) {\n  visionVideoDetail(photoId: $photoId, type: $type, page: $page, webPageArea: $webPageArea) {\n    status\n    type\n    author {\n      id\n      name\n      following\n      headerUrl\n      __typename\n    }\n    photo {\n      id\n      duration\n      caption\n      likeCount\n      realLikeCount\n      coverUrl\n      photoUrl\n      liked\n      timestamp\n      expTag\n      llsid\n      viewCount\n      videoRatio\n      stereoType\n      croppedPhotoUrl\n      manifest {\n        mediaType\n        businessType\n        version\n        adaptationSet {\n          id\n          duration\n          representation {\n            id\n            defaultSelect\n            backupUrl\n            codecs\n            url\n            height\n            width\n            avgBitrate\n            maxBitrate\n            m3u8Slice\n            qualityType\n            qualityLabel\n            frameRate\n            featureP2sp\n            hidden\n            disableAdaptive\n            __typename\n          }\n          __typename\n        }\n        __typename\n      }\n      __typename\n    }\n    tags {\n      type\n      name\n      __typename\n    }\n    commentLimit {\n      canAddComment\n      __typename\n    }\n    llsid\n    danmakuSwitch\n    __typename\n  }\n}\n"}';
     }
 
     public function getVideosInfo()
@@ -176,20 +77,38 @@ class Kuaishou extends ExtractorAdapter
     }
 
     /**
+     * Graphql 获取视频接口
+     * @return Array|null
+     */
+    public function getGraphqlQuery():?Array
+    {
+        $_headers = [
+            CURLOPT_HTTPHEADER => [
+                'Content-Type: application/json; charset=utf-8',
+                'Content-Length: ' . strlen($this->buildGraphqlQuery())
+            ],
+        ];
+        $response = Curl::postJason($this->_baseApi, $this->requestUrl, $this->buildGraphqlQuery(), $_headers);
+
+        return json_decode($response, 1);
+    }
+
+    /**
      * @return $this|void
      * @throws ParserException
      */
     public function fetch()
     {
-        $itemInfo = $this->getItemInfo();
+        $itemInfo = $this->getGraphqlQuery();
         $photoId = $this->getPhotoId();
         if(empty($itemInfo)){
             $_requestUrl = $this->_baseApi . $photoId;
             throw new ParserException('Errors：not fund playaddr》'. $_requestUrl);
         }
 
+        $videosUrl = $itemInfo['data']['visionVideoDetail']['photo']['photoUrl'];
         $this->setTitle($photoId);
-        $this->setPlaylist($itemInfo);
+        $this->setPlaylist([$videosUrl]);
         return $this;
     }
 
