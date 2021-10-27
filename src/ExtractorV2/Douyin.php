@@ -59,7 +59,9 @@ class Douyin extends ExtractorAdapter
             $_requestUrl = $this->_baseApi . $this->getVid();
             throw new ParserException('Errors：not fund playaddr》'. $_requestUrl);
         }
-
+        foreach($itemInfo['item_list'][0]['video']['play_addr']['url_list'] as &$_item){
+            $_item = str_ireplace('playwm/', 'play/', $_item);
+        }
         $this->setTitle($itemInfo['item_list'][0]['aweme_id']);
         $this->setPlaylist($itemInfo['item_list'][0]['video']['play_addr']['url_list']);
 
