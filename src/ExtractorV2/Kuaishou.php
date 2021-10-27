@@ -85,7 +85,12 @@ class Kuaishou extends ExtractorAdapter
         $_headers = [
             CURLOPT_HTTPHEADER => [
                 'Content-Type: application/json; charset=utf-8',
-                'Content-Length: ' . strlen($this->buildGraphqlQuery())
+                'Content-Length: ' . strlen($this->buildGraphqlQuery()),
+                'Cookie: did=web_3cea29c333cb458b8e6d5960d5d303bc; didv=1635330975000; kpf=PC_WEB; kpn=KUAISHOU_VISION; clientid=3; kpn=KUAISHOU_VISION',
+                'Sec-Fetch-Dest: empty',
+                'Sec-Fetch-Mode: cors',
+                'Sec-Fetch-Site: same-origin',
+                'TE: trailers',
             ],
         ];
         $response = Curl::postJason($this->_baseApi, $this->requestUrl, $this->buildGraphqlQuery(), $_headers);
@@ -107,8 +112,10 @@ class Kuaishou extends ExtractorAdapter
         }
 
         $videosUrl = $itemInfo['data']['visionVideoDetail']['photo']['photoUrl'];
+        $urlList = empty($videosUrl) ? $this->getItemInfo() : [$videosUrl];
+
         $this->setTitle($photoId);
-        $this->setPlaylist([$videosUrl]);
+        $this->setPlaylist($urlList);
         return $this;
     }
 
