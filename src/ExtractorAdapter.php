@@ -154,4 +154,28 @@ class ExtractorAdapter implements ParserInterface
         return rand(50,250).".".rand(50,250).".".rand(50,250).".".rand(50,250);
     }
 
+    /**
+     * @param string $uri
+     * @param string $method
+     * @param $header
+     * @return mixed|\Psr\Http\Message\ResponseInterface
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function requestAsync(string $uri, string $method ='get' , $header=null)
+    {
+        $httpClient = new Client();
+        $this->defaultRequestOptions();
+        $optHeader = $this->_headers;
+
+        if(!empty($this->http_proxy)){
+            $optHeader['proxy'] = $this->http_proxy;
+        }
+
+        if(!empty($header)){
+            $optHeader = $header + $optHeader;
+        }
+
+        return $httpClient->request($method, $uri, $optHeader);
+    }
+
 }

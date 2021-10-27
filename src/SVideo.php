@@ -5,20 +5,22 @@ use Mickeyto\SVideo\Exception\ParserException;
 
 class SVideo
 {
+    public $_version = '';//默认使用带水印，2 => 使用无水印版本
     public $_object = [];
     public $_url = '';
 
-    public function __construct(string $url = null)
+    public function __construct(string $url = null, $_version='')
     {
         if($url !== null) {
             $this->_url = $url;
         }
+        $this->_version = $_version;
         $this->scanExtractorDir();
     }
 
     public function extractor(string $name)
     {
-        return $this->_object[$name] = '\Mickeyto\SVideo\Extractor\\' . $name;
+        return $this->_object[$name] = '\Mickeyto\SVideo\Extractor'.$this->_version.'\\' . $name;
     }
 
     /**
@@ -68,10 +70,11 @@ class SVideo
     /**
      * 扫描已支持平台
      */
-    final private function scanExtractorDir():void
+    final function scanExtractorDir():void
     {
         if(count($this->_object) < 1){
-            $files = scandir(__DIR__ . '/Extractor');
+            $_extractorVersion = '/Extractor' . $this->_version;
+            $files = scandir(__DIR__ . $_extractorVersion);
             foreach($files as $row){
                 if('.' === $row || '..' === $row){
                     continue;
